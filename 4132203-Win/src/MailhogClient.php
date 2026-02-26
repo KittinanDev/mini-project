@@ -6,6 +6,7 @@ namespace App;
 
 class MailhogClient
 {
+    // URL ของ MailHog API เช่น http://mailhog:8025/api/v2/messages
     private string $apiUrl;
 
     public function __construct(string $apiUrl)
@@ -18,6 +19,7 @@ class MailhogClient
      */
     public function listMessages(int $limit = 20): array
     {
+        // ดึงข้อมูลดิบจาก API ก่อนแปลงเป็นรูปแบบที่หน้าเว็บใช้งานง่าย
         $data = $this->request();
         if (!isset($data['items']) || !is_array($data['items'])) {
             return [];
@@ -31,6 +33,7 @@ class MailhogClient
             $body = $item['Content']['Body'] ?? '';
             $snippet = $this->extractPlainText($body);
 
+            // ตัดข้อความให้สั้นพอดูเป็น preview
             if (strlen($snippet) > 120) {
                 $snippet = substr($snippet, 0, 120) . '...';
             }
@@ -53,6 +56,7 @@ class MailhogClient
 
     private function extractPlainText(string $body): string
     {
+        // แยกบรรทัดจากเนื้อหา MIME เพื่อคัดเฉพาะข้อความอ่านง่าย
         $lines = explode("\n", $body);
         $textLines = [];
         $inHeaders = true;
@@ -88,17 +92,20 @@ class MailhogClient
      */
     private function request(): array
     {
+        // ตั้ง timeout สั้นเพื่อไม่ให้หน้าเว็บค้างเมื่อ API มีปัญหา
         $context = stream_context_create([
             'http' => [
                 'timeout' => 3
             ]
         ]);
 
+        // ใช้ @ เพื่อไม่ให้ warning ดิบหลุดไปหน้าเว็บ
         $raw = @file_get_contents($this->apiUrl, false, $context);
         if ($raw === false) {
             return [];
         }
 
+        // แปลง JSON เป็น array และคืนค่าว่างเมื่อรูปแบบไม่ถูกต้อง
         $data = json_decode($raw, true);
         return is_array($data) ? $data : [];
     }

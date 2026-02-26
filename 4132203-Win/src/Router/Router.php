@@ -8,39 +8,41 @@ use App\Controller\EmailController;
 
 class Router
 {
+    // action ที่ถูกเรียกผ่าน query string เช่น ?action=send
     private string $action;
+    // HTTP method ของคำขอปัจจุบัน (GET/POST)
     private string $method;
 
     public function __construct()
     {
+        // อ่าน action และ HTTP method ครั้งเดียว แล้วนำไปใช้ตอน dispatch
         $this->action = $_GET['action'] ?? 'send';
         $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 
     /**
-     * Dispatch the request to appropriate controller action
+     * ส่งคำขอไปยังเมธอดของคอนโทรลเลอร์ที่เหมาะสม
      */
     public function dispatch(): void
     {
+        // สร้าง controller หลักสำหรับจัดการฟอร์มติดต่อ
         $controller = new EmailController();
 
+        // ตั้งใจให้ routing กระชับสำหรับมินิโปรเจกต์นี้
         match ($this->action) {
-            'send' => $this->handleSend($controller),
-            default => $this->handleSend($controller),
+            'send' => $this->handleHome($controller),
+            default => $this->handleHome($controller),
         };
     }
 
     private function handleHome(EmailController $controller): void
     {
+        // POST = ส่งฟอร์ม, GET = แสดงฟอร์ม
         if ($this->method === 'POST') {
             $controller->sendEmail();
         } else {
+            // แสดงหน้าฟอร์มครั้งแรกหรือหลังรีเฟรช
             $controller->showSendForm();
         }
-    }
-
-    private function handleInbox(EmailController $controller): void
-    {
-        $controller->inbox();
     }
 }

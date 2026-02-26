@@ -1,12 +1,14 @@
 <?php
 
 if (!function_exists('e')) {
+    // helper สำหรับ escape ข้อความก่อนแสดงผล ป้องกัน XSS
     function e(string $value): string
     {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
 }
 
+// ตั้งค่าเริ่มต้นของตัวแปรที่ใช้ใน layout
 $title = $title ?? 'Contact Form + Email Sender';
 $flash = $flash ?? null;
 $viewName = $viewName ?? 'home.php';
@@ -332,12 +334,14 @@ $viewName = $viewName ?? 'home.php';
     </div>
 </header>
 <main>
+    <!-- แสดงสถานะการทำงาน เช่น ส่งสำเร็จ/ผิดพลาด -->
     <?php if ($flash): ?>
         <div class="flash <?php echo e($flash['type']); ?>">
             <?php echo e($flash['message']); ?>
         </div>
     <?php endif; ?>
     <div class="panel">
+        <!-- โหลดเนื้อหาหน้าย่อยตามชื่อ view ที่ controller ส่งมา -->
         <?php require dirname(__DIR__) . '/templates/' . $viewName; ?>
     </div>
 </main>

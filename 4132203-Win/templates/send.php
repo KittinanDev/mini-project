@@ -1,5 +1,6 @@
 <?php
 
+// ค่าเริ่มต้นของข้อมูลฟอร์ม (กรณีเปิดหน้าแรกหรือไม่มีค่าจาก controller)
 $formData = $formData ?? ['name' => '', 'email' => '', 'message' => ''];
 ?>
 <section class="contact-shell">
@@ -14,10 +15,12 @@ $formData = $formData ?? ['name' => '', 'email' => '', 'message' => ''];
     </div>
     <div class="contact-main">
         <h2 class="section-title">Send Message</h2>
+        <!-- ส่งข้อมูลด้วย POST ไปที่หน้าเดิม เพื่อให้ Router จัดการต่อ -->
         <form method="post" action="/">
             <div class="form-grid">
                 <div class="form-field">
                     <label for="name">Full Name</label>
+                    <!-- เก็บค่าที่ผู้ใช้เคยกรอกไว้เมื่อ validate ไม่ผ่าน -->
                     <input id="name" name="name" type="text" required value="<?php echo e($formData['name']); ?>">
                 </div>
                 <div class="form-field">
